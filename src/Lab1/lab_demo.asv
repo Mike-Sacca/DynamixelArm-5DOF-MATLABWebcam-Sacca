@@ -1,0 +1,80 @@
+%% USE THIS FILE TO GET SIGN OFF 3
+
+robot = Robot();  % Create a robot object to use
+interpolate_time = 3.0; % TODO: choose a reasonable time to interpolate
+
+%% Send the robot to its 0 position
+% We don't need to collect data yet, as we're just putting the robot at its
+% starting point
+
+% YOUR CODE HERE
+
+robot.interpolate_jp([0,0,0,0], interpolate_time);
+pause(interpolate_time);
+%% Send the robot to an arbitrary position
+% pos1 = [a b c d];  % TODO: Choose a joint position
+
+posToGive = [40, -45, 60, -15];
+
+% TODO: Initialize an array full of 0s to store the positions
+% See https://www.mathworks.com/help/matlab/ref/zeros.html
+% We do this because allocating memory takes a lot of time, so we only want
+% to do it once
+
+dataCount = 15;
+dataTimeStep = interpolate_time / dataCount;
+data = zeros(dataCount, 5); % pos1, pos2, pos3, pos4, timeStamp
+
+% Initialize another array for the timestamps (or use the same array as the
+% positions, your call)
+% TODO: Call a function to move the robot
+
+robot.interpolate_jp(posToGive, interpolate_time);
+
+% Collect data as the robot moves
+dataIndex = 1;
+tic;  % Start timer
+while toc <= interpolate_time + (dataTimeStep / 2.0)
+    % Read current joint positions (not velocities though!)
+    % Store the positions and timesetamps in an array 
+    robotMeasurements = robot.measure_js(true, false); 
+    position = robotMeasurements(1, :);
+
+    currentTimestamp = toc; 
+    refinedMeasurement = [position, currentTimestamp];
+
+    data(dataIndex, :) = refinedMeasurement;
+    dataIndex = dataIndex + 1;
+
+    disp(data);
+    pause(dataTimeStep);
+    % Hint: use 'toc' to get the current elapsed time since tic
+end
+
+%% Make your figure
+% To use subfigures, you'll use the subplots feature of MATLAB.
+% https://www.mathworks.com/help/matlab/ref/subplot.html
+
+t = data(:,5);  
+y = data(:,1:4); 
+figure 
+for i = 1:4
+    ax(i) = subplot (4,1,i); 
+    h(i) = plot(t, y(:,i)); 
+    ylabel(['Position ' num2str(i)]); 
+    grid on
+end 
+xlabel('Time');
+sgtitle('Robot Motion ([0, 0, 0, 0] to [' + strjoin(string(posToGive), ', ') + '])'); 
+% In each subplot you create, you can use 'plot' to plot one joint value vs
+% time
+% https://www.mathworks.com/help/matlab/ref/plot.html
+% Remember titles, labels, and units!
+
+
+for i = 1:4
+    set(h(i), 'xData', t, 'yData', y(:,i)); 
+end 
+
+%% Calculate time step statistics
+

@@ -1,0 +1,18 @@
+meanTimeStep =
+
+    0.2080
+
+
+medianTimeStep =
+
+    0.2079
+
+
+maxTimeStep =
+
+    0.2089
+
+
+minTimeStep =
+
+    0.2070

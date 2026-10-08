@@ -1,0 +1,4 @@
+robot = Robot(); % Creates robot object
+robot.writeMotorState(true); % Write position mode
+
+robot.servo_jp([20 0 0 0]);
